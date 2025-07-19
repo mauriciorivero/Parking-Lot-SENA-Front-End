@@ -1,0 +1,93 @@
+/* === LOGIN FORM CONTAINER === */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--container-color);
+  border-radius: 1rem;
+  padding: 2rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 24px hsla(var(--hue), 30%, 8%, 0.3);
+  border: 1px solid var(--border-color);
+}
+
+/* === LOGIN FORM HEADER === */
+.login-form__header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.login-form__title {
+  color: var(--title-color);
+  font-size: 1.75rem;
+  font-weight: var(--font-semibold);
+  margin-bottom: 0.5rem;
+}
+
+.login-form__subtitle {
+  color: var(--text-color);
+  font-size: var(--normal-font-size);
+  opacity: 0.9;
+}
+
+/* === LOGIN FORM FIELDS === */
+.login-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.login-form__field-error {
+  color: hsl(0, 70%, 60%);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+/* === LOGIN FORM ERROR === */
+.login-form__error {
+  background: hsl(0, 70%, 25%);
+  color: hsl(0, 70%, 85%);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid hsl(0, 70%, 50%);
+  font-size: var(--small-font-size);
+  text-align: center;
+}
+
+/* === LOGIN FORM SUBMIT === */
+.login-form__submit {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+/* === LOGIN FORM FOOTER === */
+.login-form__footer {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.login-form__footer p {
+  color: var(--text-color);
+  font-size: var(--small-font-size);
+  opacity: 0.8;
+}
+
+/* === RESPONSIVE === */
+@media screen and (max-width: 767px) {
+  .login-form {
+    padding: 1.5rem;
+    max-width: 100%;
+    margin: 1rem;
+  }
+  
+  .login-form__title {
+    font-size: 1.5rem;
+  }
+  
+  .login-form__subtitle {
+    font-size: 0.875rem;
+  }
+} 

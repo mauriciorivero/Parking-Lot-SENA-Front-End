@@ -1,0 +1,172 @@
+/* === USER DATA FORM CONTAINER === */
+.user-data-form {
+  background: var(--container-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.user-data-form--readonly {
+  background: var(--border-color);
+  opacity: 0.9;
+}
+
+/* === USER DATA FORM HEADER === */
+.user-data-form__header {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.user-data-form__title {
+  color: var(--title-color);
+  font-size: 1.5rem;
+  font-weight: var(--font-semibold);
+  margin: 0 0 0.5rem 0;
+}
+
+.user-data-form__subtitle {
+  color: var(--text-color);
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* === USER DATA FORM FIELDS === */
+.user-data-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.user-data-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.user-data-form__field-error {
+  color: hsl(0, 70%, 60%);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  margin-left: 0.5rem;
+}
+
+/* === USER DATA FORM SELECT === */
+.user-data-form__select {
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--body-color);
+  color: var(--title-color);
+  font-family: var(--body-font);
+  font-size: 0.875rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  outline: none;
+}
+
+.user-data-form__select:focus {
+  border-color: var(--first-color);
+  box-shadow: 0 0 0 0.125rem hsla(var(--hue), 90%, 50%, 0.25);
+}
+
+.user-data-form__select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: hsla(var(--hue), 16%, 16%, 0.5);
+}
+
+/* === USER DATA FORM ERROR === */
+.user-data-form__error {
+  background: hsl(0, 70%, 25%);
+  color: hsl(0, 70%, 85%);
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border-left: 4px solid hsl(0, 70%, 50%);
+  font-size: var(--small-font-size);
+  text-align: center;
+}
+
+/* === USER DATA FORM ACTIONS === */
+.user-data-form__actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.user-data-form__actions button {
+  min-width: 150px;
+}
+
+/* === RESPONSIVE === */
+@media screen and (max-width: 768px) {
+  .user-data-form {
+    padding: 1.5rem;
+    gap: 1.25rem;
+  }
+  
+  .user-data-form__row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .user-data-form__title {
+    font-size: 1.25rem;
+  }
+  
+  .user-data-form__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .user-data-form__actions button {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .user-data-form {
+    padding: 1rem;
+    gap: 1rem;
+    margin: 0;
+  }
+  
+  .user-data-form__header {
+    padding-bottom: 1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .user-data-form__title {
+    font-size: 1.1rem;
+  }
+  
+  .user-data-form__subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+/* === ANIMATION === */
+.user-data-form {
+  animation: slideInUp 0.4s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+} 

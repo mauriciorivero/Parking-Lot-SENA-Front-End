@@ -1,0 +1,13 @@
+/* === USER DATA PAGE === */
+.user-data-page {
+  width: 100%;
+  min-height: calc(100vh - 4rem);
+  background: var(--body-color);
+}
+
+/* === RESPONSIVE === */
+@media screen and (max-width: 767px) {
+  .user-data-page {
+    min-height: calc(100dvh - 4rem); /* Dynamic viewport height for mobile */
+  }
+} 

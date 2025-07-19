@@ -1,0 +1,139 @@
+/* === BASE SPINNER CONTAINER === */
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spinner-container--centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* === BASE SPINNER STYLES === */
+.spinner {
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* === SPINNER SIZES === */
+.spinner--small {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+}
+
+.spinner--medium {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-width: 3px;
+}
+
+.spinner--large {
+  width: 2rem;
+  height: 2rem;
+  border-width: 4px;
+}
+
+/* === SPINNER VARIANTS === */
+.spinner--primary {
+  border: 3px solid transparent;
+  border-top-color: var(--first-color);
+}
+
+.spinner--secondary {
+  border: 3px solid transparent;
+  border-top-color: var(--text-color);
+}
+
+.spinner--white {
+  border: 3px solid transparent;
+  border-top-color: white;
+}
+
+.spinner--danger {
+  border: 3px solid transparent;
+  border-top-color: hsl(0, 70%, 50%);
+}
+
+.spinner--success {
+  border: 3px solid transparent;
+  border-top-color: hsl(120, 60%, 50%);
+}
+
+/* === SPINNER MESSAGE === */
+.spinner__message {
+  color: var(--text-color);
+  font-size: 0.875rem;
+  font-weight: var(--font-medium);
+  text-align: center;
+}
+
+/* === ANIMATION === */
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* === FULL PAGE LOADING === */
+.spinner-container--fullpage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: hsla(var(--hue), 20%, 12%, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === INLINE LOADING === */
+.spinner-container--inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* === OVERLAY LOADING === */
+.spinner-container--overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: hsla(var(--hue), 20%, 12%, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+
+/* === RESPONSIVE === */
+@media screen and (max-width: 767px) {
+  .spinner--large {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-width: 3px;
+  }
+  
+  .spinner--medium {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-width: 2px;
+  }
+  
+  .spinner__message {
+    font-size: 0.8rem;
+  }
+} 
