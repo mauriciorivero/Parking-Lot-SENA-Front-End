@@ -23,6 +23,23 @@ function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [loginError, setLoginError] = useState('');
 
+  // Estados para registro
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [registerError, setRegisterError] = useState('');
+  const [registerForm, setRegisterForm] = useState({
+    tipo_documento: '',
+    numero_documento: '',
+    primer_nombre: '',
+    segundo_nombre: '',
+    primer_apellido: '',
+    segundo_apellido: '',
+    direccion_correo: '',
+    numero_celular: '',
+    clave: '',
+    confirmar_clave: ''
+  });
+
   // Estados de la aplicación existentes
   const [activeModal, setActiveModal] = useState(null);
   const [isLoginMode, setIsLoginMode] = useState(true); // Para registro de usuarios (modal)
@@ -113,7 +130,121 @@ function App() {
     setActiveModal(null);
     setLoginForm({ email: '', password: '' });
     setLoginError('');
+    setRegisterForm({
+      tipo_documento: '',
+      numero_documento: '',
+      primer_nombre: '',
+      segundo_nombre: '',
+      primer_apellido: '',
+      segundo_apellido: '',
+      direccion_correo: '',
+      numero_celular: '',
+      clave: '',
+      confirmar_clave: ''
+    });
+    setRegisterError('');
+    setShowRegisterForm(false);
     console.log('✅ Sesión cerrada exitosamente');
+  };
+
+  // Función para manejar el registro de usuarios
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setIsRegistering(true);
+    setRegisterError('');
+
+    try {
+      // Validaciones del formulario
+      if (registerForm.clave !== registerForm.confirmar_clave) {
+        setRegisterError('Las contraseñas no coinciden');
+        setIsRegistering(false);
+        return;
+      }
+
+      if (registerForm.clave.length < 6) {
+        setRegisterError('La contraseña debe tener al menos 6 caracteres');
+        setIsRegistering(false);
+        return;
+      }
+
+      // Validar campos requeridos
+      if (!registerForm.tipo_documento || !registerForm.numero_documento || 
+          !registerForm.primer_nombre || !registerForm.primer_apellido ||
+          !registerForm.direccion_correo || !registerForm.numero_celular) {
+        setRegisterError('Por favor complete todos los campos requeridos');
+        setIsRegistering(false);
+        return;
+      }
+
+      console.log('📝 Intentando registrar usuario:', registerForm.direccion_correo);
+      
+      // Preparar datos para el API (perfil_usuario_id = 2 por defecto)
+      const userData = {
+        tipo_documento: registerForm.tipo_documento,
+        numero_documento: registerForm.numero_documento,
+        primer_nombre: registerForm.primer_nombre,
+        segundo_nombre: registerForm.segundo_nombre || null,
+        primer_apellido: registerForm.primer_apellido,
+        segundo_apellido: registerForm.segundo_apellido || null,
+        direccion_correo: registerForm.direccion_correo,
+        numero_celular: registerForm.numero_celular,
+        foto_perfil: null,
+        estado: "activo",
+        clave: registerForm.clave,
+        perfil_usuario_id: 2 // Perfil 2 por defecto (Operario)
+      };
+
+      const response = await fetch('http://localhost:3001/api/usuarios/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        console.log('✅ Registro exitoso:', data);
+        alert('¡Registro exitoso! Ahora puede iniciar sesión con sus credenciales.');
+        
+        // Pre-llenar el email en el formulario de login antes de limpiar
+        const registeredEmail = registerForm.direccion_correo;
+        
+        // Limpiar formulario y cambiar a modo login
+        setRegisterForm({
+          tipo_documento: '',
+          numero_documento: '',
+          primer_nombre: '',
+          segundo_nombre: '',
+          primer_apellido: '',
+          segundo_apellido: '',
+          direccion_correo: '',
+          numero_celular: '',
+          clave: '',
+          confirmar_clave: ''
+        });
+        setShowRegisterForm(false);
+        
+        // Pre-llenar el email en el formulario de login
+        setLoginForm(prev => ({ ...prev, email: registeredEmail }));
+      } else {
+        setRegisterError(data.message || 'Error en el registro');
+        console.error('❌ Error en registro:', data.message);
+      }
+    } catch (error) {
+      setRegisterError('Error de conexión. Verifique su conexión a internet.');
+      console.error('❌ Error de conexión en registro:', error);
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
+  // Función para alternar entre login y registro
+  const toggleRegisterForm = () => {
+    setShowRegisterForm(!showRegisterForm);
+    setLoginError('');
+    setRegisterError('');
   };
 
   // Helper functions para roles
@@ -1069,64 +1200,259 @@ function App() {
     return false;
   };
 
-  // Mostrar formulario de login si no está autenticado
+  // Mostrar formulario de login/registro si no está autenticado
   if (!isAuthenticated) {
     return (
       <div className="login-container">
         <div className="login-box">
           <div className="login-header">
             <h1>Parking Lot SENA</h1>
-            <p>Inicie sesión para acceder al sistema</p>
+            <p>{showRegisterForm ? 'Crear una nueva cuenta' : 'Inicie sesión para acceder al sistema'}</p>
+          </div>
+
+          {/* Botones para alternar entre login y registro */}
+          <div className="form-toggle-buttons">
+            <button 
+              type="button"
+              className={`toggle-btn ${!showRegisterForm ? 'active' : ''}`}
+              onClick={() => setShowRegisterForm(false)}
+              disabled={isLoggingIn || isRegistering}
+            >
+              🔑 Iniciar Sesión
+            </button>
+            <button 
+              type="button"
+              className={`toggle-btn ${showRegisterForm ? 'active' : ''}`}
+              onClick={toggleRegisterForm}
+              disabled={isLoggingIn || isRegistering}
+            >
+              📝 Registrarse
+            </button>
           </div>
           
-          <form onSubmit={handleLogin} className="login-form">
-            <div className="form-group">
-              <label htmlFor="email">Correo Electrónico:</label>
-              <input
-                type="email"
-                id="email"
-                value={loginForm.email}
-                onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="usuario@ejemplo.com"
-                required
-                disabled={isLoggingIn}
-              />
-            </div>
-            
-            <div className="form-group">
-              <label htmlFor="password">Contraseña:</label>
-              <input
-                type="password"
-                id="password"
-                value={loginForm.password}
-                onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
-                placeholder="••••••••"
-                required
-                disabled={isLoggingIn}
-              />
-            </div>
-            
-            {loginError && (
-              <div className="error-message">
-                ❌ {loginError}
+          {!showRegisterForm ? (
+            // Formulario de Login
+            <form onSubmit={handleLogin} className="login-form">
+              <div className="form-group">
+                <label htmlFor="email">Correo Electrónico:</label>
+                <input
+                  type="email"
+                  id="email"
+                  value={loginForm.email}
+                  onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="usuario@ejemplo.com"
+                  required
+                  disabled={isLoggingIn}
+                />
               </div>
-            )}
-            
-            <button 
-              type="submit" 
-              className="login-btn"
-              disabled={isLoggingIn}
-            >
-              {isLoggingIn ? (
-                <>
-                  <span className="loading-spinner"></span>
-                  Iniciando sesión...
-                </>
-              ) : (
-                'Iniciar Sesión'
+              
+              <div className="form-group">
+                <label htmlFor="password">Contraseña:</label>
+                <input
+                  type="password"
+                  id="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="••••••••"
+                  required
+                  disabled={isLoggingIn}
+                />
+              </div>
+              
+              {loginError && (
+                <div className="error-message">
+                  ❌ {loginError}
+                </div>
               )}
-            </button>
-          </form>
+              
+              <button 
+                type="submit" 
+                className="login-btn"
+                disabled={isLoggingIn}
+              >
+                {isLoggingIn ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    Iniciando sesión...
+                  </>
+                ) : (
+                  'Iniciar Sesión'
+                )}
+              </button>
+            </form>
+          ) : (
+            // Formulario de Registro
+            <form onSubmit={handleRegister} className="register-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="register-tipo-documento">Tipo de Documento: *</label>
+                  <select
+                    id="register-tipo-documento"
+                    value={registerForm.tipo_documento}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, tipo_documento: e.target.value }))}
+                    required
+                    disabled={isRegistering}
+                  >
+                    <option value="">Seleccione...</option>
+                    <option value="cedula">Cédula de Ciudadanía</option>
+                    <option value="tarjeta_identidad">Tarjeta de Identidad</option>
+                    <option value="cedula_extranjeria">Cédula de Extranjería</option>
+                    <option value="pasaporte">Pasaporte</option>
+                    <option value="otro">Otro</option>
+                  </select>
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="register-numero-documento">Número de Documento: *</label>
+                  <input
+                    type="text"
+                    id="register-numero-documento"
+                    value={registerForm.numero_documento}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, numero_documento: e.target.value }))}
+                    placeholder="12345678"
+                    required
+                    disabled={isRegistering}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="register-primer-nombre">Primer Nombre: *</label>
+                  <input
+                    type="text"
+                    id="register-primer-nombre"
+                    value={registerForm.primer_nombre}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, primer_nombre: e.target.value }))}
+                    placeholder="Juan"
+                    required
+                    disabled={isRegistering}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="register-segundo-nombre">Segundo Nombre:</label>
+                  <input
+                    type="text"
+                    id="register-segundo-nombre"
+                    value={registerForm.segundo_nombre}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, segundo_nombre: e.target.value }))}
+                    placeholder="Carlos (Opcional)"
+                    disabled={isRegistering}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="register-primer-apellido">Primer Apellido: *</label>
+                  <input
+                    type="text"
+                    id="register-primer-apellido"
+                    value={registerForm.primer_apellido}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, primer_apellido: e.target.value }))}
+                    placeholder="Pérez"
+                    required
+                    disabled={isRegistering}
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="register-segundo-apellido">Segundo Apellido:</label>
+                  <input
+                    type="text"
+                    id="register-segundo-apellido"
+                    value={registerForm.segundo_apellido}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, segundo_apellido: e.target.value }))}
+                    placeholder="González (Opcional)"
+                    disabled={isRegistering}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="register-email">Correo Electrónico: *</label>
+                <input
+                  type="email"
+                  id="register-email"
+                  value={registerForm.direccion_correo}
+                  onChange={(e) => setRegisterForm(prev => ({ ...prev, direccion_correo: e.target.value }))}
+                  placeholder="usuario@ejemplo.com"
+                  required
+                  disabled={isRegistering}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="register-celular">Número de Celular: *</label>
+                <input
+                  type="tel"
+                  id="register-celular"
+                  value={registerForm.numero_celular}
+                  onChange={(e) => setRegisterForm(prev => ({ ...prev, numero_celular: e.target.value }))}
+                  placeholder="3001234567"
+                  required
+                  disabled={isRegistering}
+                />
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="register-password">Contraseña: *</label>
+                  <input
+                    type="password"
+                    id="register-password"
+                    value={registerForm.clave}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, clave: e.target.value }))}
+                    placeholder="••••••••"
+                    required
+                    disabled={isRegistering}
+                    minLength="6"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label htmlFor="register-confirm-password">Confirmar Contraseña: *</label>
+                  <input
+                    type="password"
+                    id="register-confirm-password"
+                    value={registerForm.confirmar_clave}
+                    onChange={(e) => setRegisterForm(prev => ({ ...prev, confirmar_clave: e.target.value }))}
+                    placeholder="••••••••"
+                    required
+                    disabled={isRegistering}
+                    minLength="6"
+                  />
+                </div>
+              </div>
+              
+              {registerError && (
+                <div className="error-message">
+                  ❌ {registerError}
+                </div>
+              )}
+              
+              <button 
+                type="submit" 
+                className="register-btn"
+                disabled={isRegistering}
+              >
+                {isRegistering ? (
+                  <>
+                    <span className="loading-spinner"></span>
+                    Registrando...
+                  </>
+                ) : (
+                  'Crear Cuenta'
+                )}
+              </button>
+
+              <div className="register-info">
+                <p>💡 Al registrarse, se creará una cuenta con permisos de <strong>Operario</strong></p>
+                <p>🔒 Su información estará protegida y solo será usada para el sistema de parqueadero</p>
+              </div>
+            </form>
+          )}
           
           <div className="login-footer">
             <p>💡 Contacte al administrador si tiene problemas de acceso</p>
